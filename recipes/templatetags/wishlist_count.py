@@ -1,6 +1,6 @@
 from django import template
 
-from users.models import Wishlist
+from recipes.models import Wishlist
 
 register = template.Library()
 

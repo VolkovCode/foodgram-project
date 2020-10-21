@@ -57,12 +57,37 @@ class Ingredient(models.Model):
 class RecipeIngredient(models.Model):
     """Описание ингредиентов и их колличества для рецепта"""
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, verbose_name="Рецепт")
+        Recipe, on_delete=models.CASCADE, related_name="recipe_ingredients", verbose_name="Рецепт")
     ingredient = models.ForeignKey(
-        Ingredient, on_delete=models.CASCADE, verbose_name="Ингредиент")
+        Ingredient, on_delete=models.CASCADE, related_name="ingredients", verbose_name="Ингредиент")
     amount = models.PositiveIntegerField(verbose_name="Количество")
 
     def add_ingredient(self, recipe_id, title, amount):
         ingredient = get_object_or_404(Ingredient, title=title)
         return self.objects.get_or_create(recipe_id=recipe_id,
                                           ingredient=ingredient, amount=amount)
+
+
+class Follow(models.Model):
+    """Подписки пользователь-пользователь"""
+    subscriber = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="subscriber")
+    following = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="following")
+    class Meta:
+        unique_together = ('subscriber', 'following',)
+
+class Favorite(models.Model):
+    """Избранные рецепты"""
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="recipe")
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name="favorite_recipe")
+
+
+class Wishlist(models.Model):
+    """Список покупок"""
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="wishlist_subscriber")
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name="wishlist_recipe")

@@ -1,13 +1,20 @@
 import json
+
 from django.shortcuts import redirect
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
 
-from recipes.models import Recipe, Ingredient, RecipeIngredient
-from users.models import Favorites, Wishlist, Follow
+from recipes.models import (
+    Recipe, 
+    Ingredient, 
+    RecipeIngredient,
+    Favorite, 
+    Wishlist, 
+    Follow
+)
 
 SUCCESS_RESPONSE = JsonResponse({"success": True})
-FAIL_RESPONSE = HttpResponse()
+FAIL_RESPONSE = JsonResponse({"success": False})
 
 
 @require_http_methods(["POST"])
@@ -15,7 +22,7 @@ def add_favorite(request):
     body = json.loads(request.body)
     recipe_id = int(body['id'])
     user = request.user
-    _, created = Favorites.objects.get_or_create(
+    _, created = Favorite.objects.get_or_create(
         user_id=user.id, recipe_id=recipe_id)
     return SUCCESS_RESPONSE if created else FAIL_RESPONSE
 
@@ -23,7 +30,7 @@ def add_favorite(request):
 @require_http_methods(["DELETE"])
 def remove_favorite(request, recipe_id):
     user = request.user
-    _, deleted = Favorites.objects.filter(
+    _, deleted = Favorite.objects.filter(
         user_id=user.id, recipe_id=recipe_id).delete()
     return SUCCESS_RESPONSE if deleted else FAIL_RESPONSE
 
@@ -89,10 +96,7 @@ def get_wishlist(request):
         recipe_id__in=wishlist_filter).order_by('ingredient')
     ingredients = {}
     for ingredient in ingredient_filter:
-        if ingredient.ingredient in ingredients.keys():
-            ingredients[ingredient.ingredient] += ingredient.amount
-        else:
-            ingredients[ingredient.ingredient] = ingredient.amount
+        ingredients.keys()[ingredient.ingredient] = ingredients.keys().get(ingredient.ingredient, 0) + ingredient.amount
 
     wishlist = []
     for k, v in ingredients.items():

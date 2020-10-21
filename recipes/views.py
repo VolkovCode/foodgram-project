@@ -13,7 +13,7 @@ User = get_user_model()
 def index(request):
     tags, tags_filter = tag_collect(request)
     if tags_filter:
-        recipes = Recipe.objects.filter(tags_filter).all()
+        recipes = Recipe.objects.filter(tags_filter)
     else:
         recipes = Recipe.objects.all()
     paginator = Paginator(recipes, 6)
@@ -32,7 +32,7 @@ def user_page(request, username):
     tags, tags_filter = tag_collect(request)
     if tags_filter:
         recipes = Recipe.objects.filter(tags_filter).filter(
-            author_id=author.id).all()
+            author_id=author.id)
     else:
         recipes = Recipe.objects.filter(author_id=author.id)
     paginator = Paginator(recipes, 6)
@@ -48,8 +48,8 @@ def user_page(request, username):
 
 
 def recipe_page(request, username, recipe_id):
-    author = get_object_or_404(User, username=username)
-    recipe = get_object_or_404(Recipe, id=recipe_id, author_id=author.id)
+    #author = get_object_or_404(User, username=username)
+    recipe = get_object_or_404(Recipe, id=recipe_id, author=username)
     ingredients = RecipeIngredient.objects.filter(recipe_id=recipe_id)
     context = {
         'recipe': recipe,
@@ -81,7 +81,7 @@ def new_recipe(request):
     btn_caption = "Создать рецепт"
     form = RecipeForm(request.POST or None, files=request.FILES or None)
 
-    if request.method == "POST" and form.is_valid():
+    if form.is_valid():
         ingredients_names = request.POST.getlist('nameIngredient')
         ingredients_values = request.POST.getlist('valueIngredient')
         if len(ingredients_names) == len(ingredients_values):
@@ -100,7 +100,6 @@ def new_recipe(request):
             )
         return redirect("index")
 
-    form = RecipeForm()
     context = {
         'form_title': form_title,
         'btn_caption': btn_caption,
@@ -128,7 +127,7 @@ def edit_recipe(request, username, recipe_id):
     form = RecipeForm(request.POST or None,
                       files=request.FILES or None, instance=recipe)
 
-    if request.method == "POST" and form.is_valid():
+    if form.is_valid():
         ingredients_names = request.POST.getlist('nameIngredient')
         ingredients_values = request.POST.getlist('valueIngredient')
         if len(ingredients_names) == len(ingredients_values):
@@ -166,7 +165,7 @@ def favorites(request):
     tags, tags_filter = tag_collect(request)
     if tags_filter:
         recipes = Recipe.objects.filter(tags_filter).filter(
-            favorite_recipe__user=user).all()
+            favorite_recipe__user=user)
     else:
         recipes = Recipe.objects.filter(
             favorite_recipe__user=user).all()
@@ -185,7 +184,7 @@ def favorites(request):
 def wishlist(request):
     user = request.user
     recipes = Recipe.objects.filter(
-        wishlist_recipe__user=user).all()
+        wishlist_recipe__user=user)
     context = {
         'recipes': recipes
     }
