@@ -80,7 +80,7 @@ class Follow(models.Model):
 class Favorite(models.Model):
     """Избранные рецепты"""
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="recipe")
+        User, on_delete=models.CASCADE, related_name="favorite_author")
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name="favorite_recipe")
 

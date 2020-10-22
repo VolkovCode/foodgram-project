@@ -96,7 +96,9 @@ def get_wishlist(request):
         recipe_id__in=wishlist_filter).order_by('ingredient')
     ingredients = {}
     for ingredient in ingredient_filter:
-        ingredients.keys()[ingredient.ingredient] = ingredients.keys().get(ingredient.ingredient, 0) + ingredient.amount
+        ingredients[ingredient.ingredient] = (
+            ingredients.get(ingredient.ingredient, 0) 
+            + ingredient.amount)
 
     wishlist = []
     for k, v in ingredients.items():

@@ -48,7 +48,6 @@ def user_page(request, username):
 
 
 def recipe_page(request, username, recipe_id):
-    #author = get_object_or_404(User, username=username)
     recipe = get_object_or_404(Recipe, id=recipe_id, author=username)
     ingredients = RecipeIngredient.objects.filter(recipe_id=recipe_id)
     context = {

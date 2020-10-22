@@ -134,6 +134,7 @@ dmypy.json
 
 media/
 sent_emails/
+static/
 
 # Project settings
 foodgram/settings/local.py
